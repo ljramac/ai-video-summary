@@ -1,0 +1,17 @@
+import { parse as pathParse } from 'node:path';
+
+export abstract class File {
+  public readonly path: string;
+  public readonly filename: string;
+  public readonly ext: string;
+  public readonly dir: string;
+
+  constructor(path: string) {
+    const { ext, base, dir } = pathParse(path);
+
+    this.path = path;
+    this.filename = base;
+    this.ext = ext;
+    this.dir = dir;
+  }
+}

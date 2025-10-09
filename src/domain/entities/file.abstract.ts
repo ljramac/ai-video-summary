@@ -5,12 +5,14 @@ export abstract class File {
   public readonly filename: string;
   public readonly ext: string;
   public readonly dir: string;
+  public readonly name: string;
 
   constructor(path: string) {
-    const { ext, base, dir } = pathParse(path);
+    const { ext, base, dir, name } = pathParse(path);
 
     this.path = path;
     this.filename = base;
+    this.name = name;
     this.ext = ext;
     this.dir = dir;
   }

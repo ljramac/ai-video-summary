@@ -1,14 +1,14 @@
 {
-  "name": "tasks-pipeline-template",
+  "name": "ai-video-summary",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://github.com/ljramac/tasks-pipeline-template#readme",
+  "homepage": "https://github.com/ljramac/ai-video-summary#readme",
   "bugs": {
-    "url": "https://github.com/ljramac/tasks-pipeline-template/issues"
+    "url": "https://github.com/ljramac/ai-video-summary/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ljramac/tasks-pipeline-template.git"
+    "url": "git+https://github.com/ljramac/ai-video-summary.git"
   },
   "license": "ISC",
   "author": "Lino Rama <ljramac@gmail.com>",
@@ -27,9 +27,11 @@
     "prepare": "npx husky"
   },
   "dependencies": {
+    "child-process-promise": "2.2.1",
     "commander": "14.0.1"
   },
   "devDependencies": {
+    "@types/child-process-promise": "^2.2.6",
     "@types/jest": "^30.0.0",
     "@types/node": "24.6.2",
     "@typescript-eslint/eslint-plugin": "8.45.0",

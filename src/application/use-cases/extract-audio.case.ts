@@ -11,9 +11,10 @@ export class ExtractAudioCase {
   async run(videoPath: string, outputDir: string): Promise<void> {
     const videoFile = new VideoFile(videoPath);
 
-    console.log(videoFile.name, `${outputDir}/${videoFile.name}.wav`);
     const audioFile = new AudioFile(`${outputDir}/${videoFile.name}.wav`);
 
-    await this.audioExtractorService.run(videoFile, audioFile);
+    const result = await this.audioExtractorService.run(videoFile, audioFile);
+
+    return result;
   }
 }

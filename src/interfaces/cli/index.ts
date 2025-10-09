@@ -2,6 +2,7 @@ import commander from 'commander';
 import {
   runHandler,
   audioHandler,
+  transcriptHandler,
   ensureOutputDir,
   validateParams,
 } from './controllers/run.controller';
@@ -14,16 +15,23 @@ export const run = () => {
   program
     .command('run')
     .description('Run the transcription process')
-    .argument('<inputFile>', 'Input file path')
+    .argument('<videoPath>', 'Input file path')
     .argument('[outputDir]', 'Output directory path')
     .action(validateParams(ensureOutputDir(runHandler)));
 
   program
     .command('audio')
     .description('Run the audio extractor')
-    .argument('<inputFile>', 'Input file path')
+    .argument('<videoPath>', 'Input file path')
     .argument('[outputDir]', 'Output directory path')
     .action(validateParams(ensureOutputDir(audioHandler)));
+
+  program
+    .command('transcript')
+    .description('Run the transcript extractor')
+    .argument('<videoPath>', 'Input file path')
+    .argument('[outputDir]', 'Output directory path')
+    .action(validateParams(ensureOutputDir(transcriptHandler)));
 
   program.parse(process.argv);
 };

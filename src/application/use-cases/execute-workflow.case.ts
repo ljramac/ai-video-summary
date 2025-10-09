@@ -1,4 +1,4 @@
-import { ITask } from '../task';
+import { ITask } from '../task.interface';
 
 export class ExecuteWorkflow {
   private params: any = {};

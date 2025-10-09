@@ -1,6 +1,6 @@
 import { ExtractAudioCase } from '../../application/use-cases/extract-audio.case';
 import { AudioExtractorService } from '../services/audio-extractor.service.impl';
-import { ITask } from '../../application/task';
+import { ITask } from '../../application/task.interface';
 
 export class ExtractAudioTask implements ITask {
   public readonly name: string = 'ExtractAudioTask';
@@ -12,11 +12,11 @@ export class ExtractAudioTask implements ITask {
       const extractAudioService = new AudioExtractorService();
       const extractAudioCase = new ExtractAudioCase(extractAudioService);
 
-      await extractAudioCase.run(data.videoPath, data.outputDir);
+      const result: any = await extractAudioCase.run(data.videoPath, data.outputDir);
 
       return {
         status: 'completed',
-        data: { ...data, info: 'ExtractAudioTask executed successfully' },
+        data: { ...data, info: 'ExtractAudioTask executed successfully', ...result },
       };
     } catch (error: any) {
       console.error(`Error executing ExtractAudioTask: ${error}`);

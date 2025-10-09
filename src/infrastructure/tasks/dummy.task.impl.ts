@@ -1,4 +1,4 @@
-import { ITask } from '../../application/task';
+import { ITask } from '../../application/task.interface';
 
 export class DummyTask implements ITask {
   public readonly name: string = 'DummyTask';

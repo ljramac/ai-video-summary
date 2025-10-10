@@ -1,6 +1,6 @@
 AI Video Summary
 
-A lightweight CLI application to extract audio from video files and run transcription/workflows. This project is implemented in TypeScript and designed as a small, modular pipeline with clear separation between domain, application, and infrastructure layers.
+A lightweight CLI application to extract audio from video files, transcribe audio, and run a multi-step workflow. This project is implemented in TypeScript and organized with a clean architecture: domain (entities and interfaces), application (use-cases, workflow), infrastructure (implementations), and interfaces (CLI).
 
 ## Table of contents
 
@@ -17,24 +17,25 @@ A lightweight CLI application to extract audio from video files and run transcri
 
 ## Overview
 
-This repository contains a CLI tool that can extract audio from video files and run a configurable workflow of tasks (for example: extract audio, transcribe speech, summarize text). The codebase is organized with a clean architecture approach: domain entities and services, application use-cases, and infrastructure implementations.
+This repository contains a CLI tool that can extract audio from video files, run transcription on audio files, and execute a configurable workflow composed of tasks. The codebase is organized for extensibility and testability.
 
 The main entrypoint is the CLI under `src/interfaces/cli` which wires together tasks and services from the `application` and `infrastructure` layers.
 
 ## Features
 
 - Extract audio from common video formats (mp4, mkv, avi, mov, etc.)
-- Pluggable task-based workflow execution
-- Simple CLI interface with `run` and `audio` commands
-- Config-driven secrets and service settings using `config` package
+- Transcribe audio files via a transcriptor service
+- Pluggable, ordered task workflow (audio extraction + transcription)
+- Simple CLI with `workflow`, `audio`, and `transcript` commands
+- Config-driven secrets and settings using `config` package
 
 ## Quickstart
 
 Requirements:
 
-- Node.js (recommended: version listed in `package.json` engines; this project targets Node 24.x)
-- npm (or compatible package manager)
-- ffmpeg (or the underlying tool used by the audio extractor service, installed on your PATH)
+- Node.js (see `package.json` engines; project targets Node 24.x)
+- npm (or a compatible package manager)
+- ffmpeg (or the tool used by the audio extractor implementation) installed and available on PATH
 
 Install dependencies:
 
@@ -48,123 +49,132 @@ Build (optional):
 npm run build
 ```
 
-Run the CLI directly (TypeScript runtime via ts-node is configured):
+Run the CLI directly (via ts-node):
 
 ```bash
-npm start -- run path/to/video.mp4 output/directory
-```
+# Run full workflow (extract audio then transcribe)
+npm start -- workflow path/to/video.mp4 output/directory
 
-Or run just the audio extraction:
-
-```bash
+# Extract audio only
 npm start -- audio path/to/video.mp4 output/directory
+
+# Transcribe an existing audio file
+npm start -- transcript path/to/audio.wav output/directory
 ```
 
 Notes:
 
 - If `output/directory` is omitted, the CLI will create an output directory next to the input file.
+- The CLI validates file extensions. Supported inputs for validation include: mp4, mkv, avi, mov, m4a, mp3, wav.
 - The project uses the `config` package. Put environment-specific settings in `config/*.yml`.
 
 ## CLI Usage
 
-The CLI exports two commands: `run` and `audio`.
+Commands exposed by the CLI:
 
-- run <videoPath> [outputDir]
-  - Runs the full workflow (currently configured to run extract-audio task).
+- workflow <videoPath> [outputDir]
+  - Executes the workflow: runs `ExtractAudioTask` followed by `TranscriptionTask`.
 
 - audio <videoPath> [outputDir]
   - Runs only the audio extraction use-case.
 
-Examples:
+- transcript <audioPath> [outputDir]
+  - Runs only the transcription use-case on an existing audio file.
 
-```bash
-# Run full workflow
-npm start -- run ./videos/sample.mp4 ./out
+Behind the scenes:
 
-# Extract audio only
-npm start -- audio ./videos/sample.mp4
-```
-
-The CLI performs basic validation on the input file extension (mp4, mkv, avi, mov, m4a, mp3). If validation fails, it will throw an error and exit.
+- `workflow` uses `RunWorkflow` from `application/use-cases/workflow.case.ts` with tasks from `infrastructure/workflow/`.
+- `audio` uses `ExtractAudioCase` from `application/use-cases/audio.case.ts` and `AudioExtractorService` from `infrastructure/services/audio-extractor.service.impl.ts`.
+- `transcript` uses `Transcribe` from `application/use-cases/transcribe.case.ts` and `TranscriptorService` from `infrastructure/services/transcriptor.service.impl.ts`.
+- CLI middlewares in `src/interfaces/cli/middlewares/common.ts` provide validation via `WorkflowDTO` and output directory handling via `FileSystemService` from `infrastructure/storage/fs.storage.impl.ts`.
 
 ## Configuration
 
 This project uses the `config` package. Default configuration files are located in the `config/` directory. Typical settings you might provide:
 
-- services.whisper.token — API token for a transcription service (example key referenced in code)
+- services.whisper.token — API token for a transcription service (referenced from code)
 - other service endpoints and credentials depending on integrations
 
-Environment variables and `NODE_ENV` determine which config file is loaded (see `config` package docs).
+`NODE_ENV` determines which config file is loaded. You can add `config/local.yml` for local overrides (ensure you don’t commit secrets).
 
 ## Project Structure & Architecture
 
 High-level layout:
 
 - src/
-  - index.ts — application entrypoint that starts the CLI
-  - application/ — use-cases and task orchestration
-  - domain/ — entities and domain services interfaces
-  - infrastructure/ — concrete implementations (audio extractor, filesystem, tasks)
-  - interfaces/cli — CLI layer (controllers, DTOs)
+  - index.ts — CLI entrypoint loader
+  - application/
+    - use-cases/
+      - `workflow.case.ts` — orchestration runner (`RunWorkflow`)
+      - `audio.case.ts` — audio extraction use-case (`ExtractAudioCase`)
+      - `transcribe.case.ts` — transcription use-case (`Transcribe`)
+    - storage/
+      - `fs.storage.ts` — filesystem service interface (`IFileSystemService`)
+    - workflow/
+      - `task.interface.ts`, `types/task.types.ts` — workflow contracts and types
+  - domain/
+    - entities/
+      - `video.file.ts`, `audio.file.ts`
+    - services/
+      - `audio.service.ts`, `transcript.service.ts` — service interfaces
+  - infrastructure/
+    - services/
+      - `audio-extractor.service.impl.ts`, `transcriptor.service.impl.ts`
+    - storage/
+      - `fs.storage.impl.ts` — `FileSystemService` (includes `ensureOutputDir`)
+    - workflow/
+      - `audio.task.impl.ts`, `transcript.task.impl.ts`, `dummy.task.impl.ts`
+  - interfaces/
+    - cli/
+      - index.ts — command registration
+      - controllers/run.controller.ts — command handlers (`workflowHandler`, `audioHandler`, `transcriptionHandler`)
+      - middlewares/common.ts — validation and output dir helpers
+      - dto/ — `abstract.dto.ts`, `workflow.dto.ts`
 
 Key concepts:
 
-- Tasks: units of work that can be composed into workflows. Example: `ExtractAudioTask`.
-- Use-cases: application-level operations that orchestrate services (e.g., `ExtractAudioCase`, `ExecuteWorkflow`).
-- Services: abstractions in `domain/services` with concrete implementations under `infrastructure/services`.
-
-This separation allows swapping implementations (for example, replacing the audio extraction implementation or adding a remote transcription service) without changing business logic.
+- Workflow and tasks: tasks implement a common contract and are executed by `RunWorkflow` with shared `TaskParams` and `TaskStatus`.
+- Use-cases orchestrate domain services: `ExtractAudioCase` uses `IAudioExtractorService`; `Transcribe` uses `ITranscriptorService`.
+- Infrastructure provides concrete implementations for services and tasks.
+- The filesystem abstraction lives under `application/storage` (interface) and `infrastructure/storage` (implementation).
 
 ## Development
 
-Basic scripts from `package.json`:
+Scripts:
 
-- npm start — runs `src/index.ts` with `ts-node` (uses CommonJS module option)
-- npm run build — compiles TypeScript to JavaScript using `tsc`
-- npm run lint — runs ESLint on `src`
-- npm run lint:fix — fixes lint issues where possible
-- npm run prettier — formats code with Prettier
-- npm test — runs Jest tests under `test`
+- `npm start` — runs `src/index.ts` with ts-node
+- `npm run build` — compile TypeScript
+- `npm run lint` — ESLint on `src`
+- `npm run lint:fix` — fix lint issues
+- `npm run prettier` — format with Prettier
+- `npm test` — run Jest tests
 
-Husky and lint-staged are configured to run lint and prettier on staged files before commits.
+Husky and lint-staged enforce linting/formatting pre-commit.
 
-Local development recommendations:
+Local development tips:
 
-1. Install Node and required system-level tools (ffmpeg).
-2. Create a personal `config/local.yml` or set environment variables for any secrets (for example, `services.whisper.token`).
-3. Run the CLI with `npm start -- run <video> [out]` while iterating on code.
+1. Ensure ffmpeg is installed and on PATH.
+2. Set up config files under `config/` or environment variables for tokens like `services.whisper.token`.
+3. Try the commands in small steps: `audio` first, then `transcript`, then `workflow`.
 
 ## Testing
 
-Unit tests are located under `test/unit`. Run tests with:
+Unit tests live under `test/unit`. Run tests with:
 
 ```bash
 npm test
 ```
 
-The project uses Jest with `ts-jest`.
+The project uses Jest and ts-jest.
 
-## Contribution
+## Contributing
 
-Contributions are welcome. Suggested workflow:
+Contributions are welcome:
 
-1. Fork the repository and create a feature branch.
-2. Run lint and tests locally before opening a PR.
-3. Keep changes small and focused; include tests for new behaviors.
-
-Please follow the repository linting and formatting rules. Husky hooks run pre-commit to help.
-
-## Notes & Next steps
-
-- The repo is organized to allow adding transcription, summarization, and other AI-based processors as separate tasks.
-- If you plan to integrate remote APIs (OpenAI/Whisper or others), add a secure place to store tokens (environment variables or a secret manager) and reference them from `config`.
-
-If you want, I can also:
-
-- Add an example `config/local.yml` with placeholder keys
-- Add a sample script that processes a small test video and demonstrates the full pipeline
-- Add more docs describing how to implement a new task and register it with the workflow
+1. Create a feature branch
+2. Write tests and keep changes focused
+3. Run lint and tests before opening a PR
 
 ## License
 
-This project is licensed under the ISC License. See `package.json` for author and license details.
+This project is licensed under the ISC License. See `package.json` for details.

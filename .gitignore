@@ -9,3 +9,5 @@ coverage
 *.bak
 *.swp
 .git
+config/development.yml
+data

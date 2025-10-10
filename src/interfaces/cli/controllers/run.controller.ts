@@ -1,45 +1,35 @@
-import { RunDto } from '../dto/run.dto';
-import { ExtractAudioTask } from '../../../infrastructure/tasks/extract-audio.task.impl';
-import { ExecuteWorkflow } from '../../../application/use-cases/execute-workflow.case';
+import { ExtractAudioTask } from '../../../infrastructure/workflow/audio.task.impl';
+import { TranscriptionTask } from '../../../infrastructure/workflow/transcript.task.impl';
+import { RunWorkflow } from '../../../application/use-cases/workflow.case';
 import { AudioExtractorService } from '../../../infrastructure/services/audio-extractor.service.impl';
-import { FileSystemService } from '../../../infrastructure/services/filesystem.service.impl';
-import { ExtractAudioCase } from '../../../application/use-cases/extract-audio.case';
+import { TranscriptorService } from '../../../infrastructure/services/transcriptor.service.impl';
+import { Transcribe } from '../../../application/use-cases/transcribe.case';
+import { ExtractAudioCase } from '../../../application/use-cases/audio.case';
+import { TaskStatus, TaskParams } from '../../../application/workflow/types/task.types';
 
-export const validateParams = (next: any) => {
-  return async (inputFile: string, outputDir?: string) => {
-    const runDto = new RunDto(inputFile);
-
-    await runDto.validate().catch((error) => {
-      throw new Error(`Validation failed: ${error.message}`);
-    });
-
-    return await next(inputFile, outputDir);
-  };
-};
-
-export const ensureOutputDir = (next: any) => {
-  return async (inputFile: string, outputDir: string) => {
-    const fsSystemService = new FileSystemService();
-
-    return await next(inputFile, await fsSystemService.ensureOutputDir(outputDir ?? inputFile));
-  };
-};
-
-export const runHandler = async (inputFile: string, outputDir: string) => {
+export const workflowHandler = async (videoPath: string, outputDir: string) => {
   const extractAudioTask = new ExtractAudioTask();
-  const executeWorkflow = new ExecuteWorkflow([extractAudioTask]);
+  const transcriptionTask = new TranscriptionTask();
 
-  executeWorkflow.addParams({
-    data: { inputFile, outputDir },
-    status: 'pending',
-  });
+  const runWorkflow = new RunWorkflow([extractAudioTask, transcriptionTask]);
 
-  await executeWorkflow.run();
+  const params: TaskParams = { data: { videoPath, outputDir }, status: TaskStatus.PENDING };
+
+  runWorkflow.addParams(params);
+
+  await runWorkflow.run();
 };
 
-export const audioHandler = async (inputFile: string, outputDir: string) => {
+export const audioHandler = async (videoPath: string, outputDir: string) => {
   const audioService = new AudioExtractorService();
   const audioCase = new ExtractAudioCase(audioService);
 
-  await audioCase.run(inputFile, outputDir);
+  await audioCase.run(videoPath, outputDir);
+};
+
+export const transcriptionHandler = async (audioPath: string, outputDir: string) => {
+  const transcriptorService = new TranscriptorService();
+  const transcribe = new Transcribe(transcriptorService);
+
+  await transcribe.run(audioPath, outputDir);
 };

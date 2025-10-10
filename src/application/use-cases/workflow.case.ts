@@ -13,8 +13,6 @@ export class RunWorkflow {
     for (const task of this.tasks) {
       this.params = await task.run(this.params?.data);
 
-      console.log(`Task ${task.name} executed with result: ${this.params?.status}`);
-
       if (this.params?.status === TaskStatus.FAILED) {
         console.error(`Workflow stopped due to failure in task: ${task.name}`);
         console.error(this.params?.error);
@@ -22,5 +20,7 @@ export class RunWorkflow {
         break;
       }
     }
+
+    return this.params?.status;
   }
 }

@@ -1,12 +1,8 @@
-export interface IRunDto {
-  inputFile: string;
-}
+import { AbstractDTO } from './abstract.dto';
 
-export class RunDto implements IRunDto {
-  public readonly inputFile: string;
-
+export class WorkflowDTO extends AbstractDTO {
   constructor(inputFile: string) {
-    this.inputFile = inputFile;
+    super(inputFile);
   }
 
   async validate(): Promise<void> {

@@ -1,4 +1,4 @@
 export interface ITask {
   name: string;
-  execute(data: any): Promise<any>;
+  run(data: any): Promise<any>;
 }

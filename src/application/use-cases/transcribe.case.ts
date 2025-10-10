@@ -1,7 +1,7 @@
 import { AudioFile } from '../../domain/entities/audio.file';
-import { ITranscriptorService } from '../../domain/services/transcriptor.service';
+import { ITranscriptorService } from '../../domain/services/transcript.service';
 
-export class ExecuteTranscriptionCase {
+export class Transcribe {
   private readonly transcriptorService: ITranscriptorService;
 
   constructor(transcriptorService: ITranscriptorService) {

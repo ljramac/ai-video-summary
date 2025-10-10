@@ -1,4 +1,4 @@
-import { IFileSystemService } from '../../application/services/filesystem.service';
+import { IFileSystemService } from '../../application/storage/fs.storage';
 import fs from 'node:fs/promises';
 import { parse as pathParse } from 'path';
 

@@ -1,11 +1,7 @@
 import commander from 'commander';
-import {
-  runHandler,
-  audioHandler,
-  transcriptHandler,
-  ensureOutputDir,
-  validateParams,
-} from './controllers/run.controller';
+import { workflowHandler, audioHandler, transcriptionHandler } from './controllers/run.controller';
+
+import { validateParams, ensureOutputDir } from './middlewares/common';
 
 export const run = () => {
   const program = new commander.Command();
@@ -13,11 +9,11 @@ export const run = () => {
   program.version('0.1.0').description('Transcriptor CLI');
 
   program
-    .command('run')
-    .description('Run the transcription process')
+    .command('workflow')
+    .description('Run the transcription process workflow')
     .argument('<videoPath>', 'Input file path')
     .argument('[outputDir]', 'Output directory path')
-    .action(validateParams(ensureOutputDir(runHandler)));
+    .action(validateParams(ensureOutputDir(workflowHandler)));
 
   program
     .command('audio')
@@ -31,7 +27,7 @@ export const run = () => {
     .description('Run the transcript extractor')
     .argument('<videoPath>', 'Input file path')
     .argument('[outputDir]', 'Output directory path')
-    .action(validateParams(ensureOutputDir(transcriptHandler)));
+    .action(validateParams(ensureOutputDir(transcriptionHandler)));
 
   program.parse(process.argv);
 };

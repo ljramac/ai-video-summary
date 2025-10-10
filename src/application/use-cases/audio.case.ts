@@ -1,6 +1,6 @@
 import { VideoFile } from '../../domain/entities/video.file';
 import { AudioFile } from '../../domain/entities/audio.file';
-import { IAudioExtractorService } from '../../domain/services/audio-extractor.service';
+import { IAudioExtractorService } from '../../domain/services/audio.service';
 
 export class ExtractAudioCase {
   private readonly audioExtractorService: IAudioExtractorService;

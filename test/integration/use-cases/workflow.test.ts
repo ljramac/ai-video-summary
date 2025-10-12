@@ -2,7 +2,8 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { TaskStatus } from '../../../src/application/workflow/types/task.types';
-import { ExtractAudioTask } from '../../../src/infrastructure/workflow/audio.task.impl';
+import { ExtractAudioTask } from '../../../src/infrastructure/tasks/audio.task.impl';
+import { TranscriptionTask } from '../../../src/infrastructure/tasks/transcript.task.impl';
 import { RunWorkflow } from '../../../src/application/use-cases/workflow.case';
 
 describe('RunWorkflow', () => {
@@ -56,14 +57,12 @@ describe('RunWorkflow', () => {
   });
 
   it('should create an instance of RunWorkflow', async () => {
-    const tasks = [new ExtractAudioTask()];
+    const tasks = [new ExtractAudioTask(), new TranscriptionTask()];
     const runWorkflow = new RunWorkflow(tasks);
 
     runWorkflow.addParams({
-      data: {
-        videoPath,
-        outputDir,
-      },
+      videoPath,
+      outputDir,
       status: TaskStatus.PENDING,
     });
 

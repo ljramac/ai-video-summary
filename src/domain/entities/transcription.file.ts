@@ -11,11 +11,11 @@ export class TranscriptionFile extends File {
     this.text = '';
   }
 
-  protected addTitle(title: string) {
+  public addTitle(title: string) {
     this.title = title;
   }
 
-  protected addText(text: string) {
+  public addText(text: string) {
     this.text = text;
   }
 }

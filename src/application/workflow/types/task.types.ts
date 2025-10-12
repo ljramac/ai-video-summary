@@ -6,6 +6,10 @@ export enum TaskStatus {
 
 export type TaskParams = {
   status: TaskStatus;
-  data?: any;
   error?: Error | string;
+  videoPath?: string;
+  outputDir?: string;
+  audioPath?: string;
+  transcriptPath?: string;
+  [key: string]: any;
 };

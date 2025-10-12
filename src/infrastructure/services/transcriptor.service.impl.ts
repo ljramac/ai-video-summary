@@ -1,8 +1,35 @@
+import fs from 'node:fs';
+import config from 'config';
+import OpenAI from 'openai';
+import { logger } from './logger.service.impl';
 import { AudioFile } from '../../domain/entities/audio.file';
 import { ITranscriptorService } from '../../domain/services/transcript.service';
+import { TranscoderService } from './transcoder.service.impl';
 
 export class TranscriptorService implements ITranscriptorService {
-  run(audioFile: AudioFile, outputDir: string): Promise<any> {
-    return Promise.resolve('holi' + audioFile.path + ' ' + outputDir);
+  private readonly apiKey: string = config.get('services.openai.apiKey');
+
+  async run(audioFile: AudioFile): Promise<any> {
+    const openai = new OpenAI({ apiKey: this.apiKey });
+
+    const audioExtractorService = new TranscoderService();
+    const audioPaths = await audioExtractorService.cutBySize(audioFile.path);
+
+    let fullTranscription = '';
+
+    for (const path of audioPaths) {
+      logger.info(`Transcribing audio part: ${path}`);
+
+      const partTranscription = await openai.audio.transcriptions
+        .create({
+          file: fs.createReadStream(path),
+          model: 'whisper-1',
+        })
+        .catch((error) => error?.message);
+
+      fullTranscription += partTranscription?.text ?? partTranscription + ' ';
+    }
+
+    return fullTranscription;
   }
 }

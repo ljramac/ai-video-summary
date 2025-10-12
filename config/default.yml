@@ -1,3 +1,10 @@
 services:
-  whisper:
-    token:
+  claude:
+    claude:
+      summary:
+        prompt:
+          prefix: 'Make a summary in markdown format of this transcription in its original language:'
+    url: https://api.anthropic.com/v1/messages
+    apiKey:
+  openai:
+    apiKey:

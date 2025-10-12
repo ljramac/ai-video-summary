@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "homepage": "https://github.com/ljramac/ai-video-summary#readme",
+  "bin": {
+    "transcribe": "./dist/bin/workflow.js",
+    "workflow": "./dist/bin/workflow.js",
+    "audio": "./dist/bin/audio.js",
+    "transcript": "./dist/bin/transcript.js",
+    "summary": "./dist/bin/summary.js"
+  },
   "bugs": {
     "url": "https://github.com/ljramac/ai-video-summary/issues"
   },
@@ -13,7 +20,7 @@
   "license": "ISC",
   "author": "Lino Rama <ljramac@gmail.com>",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "directories": {
     "test": "test"
   },
@@ -23,13 +30,16 @@
     "lint:fix": "npx eslint src --fix",
     "prettier": "npx prettier --write",
     "build": "tsc",
-    "start": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' src/index.ts",
-    "prepare": "npx husky"
+    "start": "node dist/src/index.js",
+    "dev": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' src/index.ts",
+    "prepare": "npx husky && npx tsc"
   },
   "dependencies": {
+    "axios": "1.12.2",
     "child-process-promise": "2.2.1",
     "commander": "14.0.1",
-    "config": "4.1.1"
+    "config": "4.1.1",
+    "openai": "6.3.0"
   },
   "devDependencies": {
     "@types/child-process-promise": "^2.2.6",
@@ -63,5 +73,8 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

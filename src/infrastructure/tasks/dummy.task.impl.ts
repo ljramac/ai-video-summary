@@ -5,9 +5,12 @@ export class DummyTask implements ITask {
 
   async run(data?: any): Promise<any> {
     try {
-      return { status: 'completed', data: { ...data, info: 'DummyTask executed successfully' } };
+      return {
+        status: 'completed',
+        info: 'DummyTask executed successfully with data: ' + JSON.stringify(data),
+      };
     } catch (error) {
-      return { status: 'failed', data, error };
+      return { status: 'failed', error };
     }
   }
 }

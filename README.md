@@ -59,7 +59,7 @@ npm start -- workflow path/to/video.mp4 output/directory
 npm start -- audio path/to/video.mp4 output/directory
 
 # Transcribe an existing audio file
-npm start -- transcript path/to/audio.wav output/directory
+npm start -- transcript path/to/audio.m4a output/directory
 ```
 
 Notes:
@@ -84,7 +84,7 @@ Commands exposed by the CLI:
 Behind the scenes:
 
 - `workflow` uses `RunWorkflow` from `application/use-cases/workflow.case.ts` with tasks from `infrastructure/workflow/`.
-- `audio` uses `ExtractAudioCase` from `application/use-cases/audio.case.ts` and `AudioExtractorService` from `infrastructure/services/audio-extractor.service.impl.ts`.
+- `audio` uses `ExtractAudioCase` from `application/use-cases/audio.case.ts` and `TranscoderService` from `infrastructure/services/audio-extractor.service.impl.ts`.
 - `transcript` uses `Transcribe` from `application/use-cases/transcribe.case.ts` and `TranscriptorService` from `infrastructure/services/transcriptor.service.impl.ts`.
 - CLI middlewares in `src/interfaces/cli/middlewares/common.ts` provide validation via `WorkflowDTO` and output directory handling via `FileSystemService` from `infrastructure/storage/fs.storage.impl.ts`.
 
@@ -109,7 +109,7 @@ High-level layout:
       - `audio.case.ts` — audio extraction use-case (`ExtractAudioCase`)
       - `transcribe.case.ts` — transcription use-case (`Transcribe`)
     - storage/
-      - `fs.storage.ts` — filesystem service interface (`IFileSystemService`)
+      - `fs.storage.ts` — filesystem service interface (`IBinaryService`)
     - workflow/
       - `task.interface.ts`, `types/task.types.ts` — workflow contracts and types
   - domain/
@@ -134,7 +134,7 @@ High-level layout:
 Key concepts:
 
 - Workflow and tasks: tasks implement a common contract and are executed by `RunWorkflow` with shared `TaskParams` and `TaskStatus`.
-- Use-cases orchestrate domain services: `ExtractAudioCase` uses `IAudioExtractorService`; `Transcribe` uses `ITranscriptorService`.
+- Use-cases orchestrate domain services: `ExtractAudioCase` uses `ITranscoderService`; `Transcribe` uses `ITranscriptorService`.
 - Infrastructure provides concrete implementations for services and tasks.
 - The filesystem abstraction lives under `application/storage` (interface) and `infrastructure/storage` (implementation).
 

@@ -1,5 +1,6 @@
 import commander from 'commander';
-import { workflowHandler, audioHandler, transcriptionHandler } from './controllers/run.controller';
+import { workflowHandler } from './controllers/workflow.controller';
+import { audioHandler, transcriptionHandler } from './controllers/tasks.controller';
 
 import { validateParams, ensureOutputDir } from './middlewares/common';
 

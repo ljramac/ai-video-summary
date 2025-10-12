@@ -1,5 +1,5 @@
 import { WorkflowDTO } from '../dto/workflow.dto';
-import { FileSystemService } from '../../../infrastructure/storage/fs.storage.impl';
+import { FileSystemService } from '../../../infrastructure/storage/binary.storage.impl';
 
 export const validateParams = (next: any) => {
   return async (inputFile: string, outputDir?: string) => {

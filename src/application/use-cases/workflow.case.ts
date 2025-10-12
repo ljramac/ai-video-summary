@@ -11,7 +11,11 @@ export class RunWorkflow {
 
   async run(): Promise<any> {
     for (const task of this.tasks) {
-      this.params = await task.run(this.params?.data);
+      console.log(`Running task: ${task.name}`);
+
+      const outputParams = await task.run(this.params);
+
+      this.addParams(outputParams);
 
       if (this.params?.status === TaskStatus.FAILED) {
         console.error(`Workflow stopped due to failure in task: ${task.name}`);

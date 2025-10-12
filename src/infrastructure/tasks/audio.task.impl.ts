@@ -1,23 +1,23 @@
-import { ExtractAudioCase } from '../../application/use-cases/audio.case';
-import { AudioExtractorService } from '../services/audio-extractor.service.impl';
+import { ExtractAudioCase } from '../../application/use-cases/tasks/audio.case';
+import { TranscoderService } from '../services/transcoder.service.impl';
 import { ITask } from '../../application/workflow/task.interface';
 
 export class ExtractAudioTask implements ITask {
   public readonly name: string = 'ExtractAudioTask';
 
-  async run(data?: any): Promise<any> {
+  async run(data: { videoPath: string; outputDir: string }): Promise<any> {
     try {
-      const extractAudioService = new AudioExtractorService();
+      const extractAudioService = new TranscoderService();
       const extractAudioCase = new ExtractAudioCase(extractAudioService);
 
       const result: any = await extractAudioCase.run(data.videoPath, data.outputDir);
 
       return {
         status: 'completed',
-        data: { ...data, info: 'ExtractAudioTask executed successfully', ...result },
+        ...result,
       };
     } catch (error) {
-      return { status: 'failed', data: { ...data, error } };
+      return { status: 'failed', error };
     }
   }
 }

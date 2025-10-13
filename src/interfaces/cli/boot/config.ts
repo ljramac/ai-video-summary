@@ -21,13 +21,22 @@ export default async () => {
       },
     ]);
 
+<<<<<<< HEAD
     const configObject = require('../../../../config/default.json');
+=======
+    const configFile = `${process.env['NODE_CONFIG_DIR']}/default.json`;
+    const configObject = require(configFile);
+>>>>>>> d388588 (refactor(core): preparing code structure to publish)
 
     configObject.services.openai.apiKey = answers.apiKey;
 
     const stringifiedConfig = JSON.stringify(configObject, null, 2);
 
+<<<<<<< HEAD
     fs.writeFileSync('config/default.json', stringifiedConfig);
+=======
+    fs.writeFileSync(configFile, stringifiedConfig);
+>>>>>>> d388588 (refactor(core): preparing code structure to publish)
 
     process.env.NODE_CONFIG = stringifiedConfig;
 

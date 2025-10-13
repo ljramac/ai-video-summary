@@ -19,7 +19,7 @@ A comprehensive CLI application for video processing, audio extraction, transcri
 
 This repository contains a powerful CLI tool that processes video files through a complete workflow: audio extraction, speech-to-text transcription, and AI-powered summarization. The application is designed with clean architecture principles, featuring domain entities, application use-cases, infrastructure implementations, and a CLI interface.
 
-The project can be used both as a CLI tool and as a Node.js library, supporting multiple output formats (CommonJS and ESM).
+The project can be used both as a CLI tool and as a Node.js library, built primarily for CommonJS with optional ESM support.
 
 ## Features
 
@@ -28,7 +28,8 @@ The project can be used both as a CLI tool and as a Node.js library, supporting 
 - **OpenAI Integration**: Uses OpenAI's Whisper for transcription and GPT for summarization
 - **Multiple Formats Support**: mp4, mkv, avi, mov, m4a, mp3, wav
 - **Clean Architecture**: Separated concerns with clear interfaces and implementations
-- **Dual Package Support**: Both CommonJS and ESM builds
+- **Dual Build Support**: CommonJS (primary) and ESM builds available
+- **TypeScript Support**: Full TypeScript implementation with strong typing
 - **Configurable Logging**: Colored console output with structured logging
 - **Command Aliases**: Multiple ways to invoke the same functionality
 
@@ -37,7 +38,7 @@ The project can be used both as a CLI tool and as a Node.js library, supporting 
 ### Global Installation (Recommended)
 
 ```bash
-npm install -g ai-video-summary
+npm install -g @ljrama/ai-video-summary
 ```
 
 After installation, use the global command:
@@ -101,6 +102,7 @@ npm run dev
 - The CLI validates file extensions: mp4, mkv, avi, mov, m4a, mp3, wav
 - OpenAI API key is required and loaded from environment variables
 - The project uses the `config` package for configuration management
+- The project is configured primarily for CommonJS with dual builds (CJS/ESM)
 
 ## CLI Usage
 
@@ -108,7 +110,7 @@ npm run dev
 
 The CLI provides four main commands with multiple aliases for convenience:
 
-Available commands: `workflow`, `audio`, `extract`, `transcribe`, `transcript`, `summary`, `summarize`
+Available commands: `run`, `workflow`, `audio`, `extract`, `transcript`, `transcribe`, `summary`, `summarize`
 
 #### 1. Complete Workflow
 
@@ -187,11 +189,15 @@ ai-summary summarize ./transcripts/meeting.txt ./summaries   # same as summary
 
 The project uses the `config` package with files in the `config/` directory:
 
-```yaml
-# config/default.yml
-services:
-  openai:
-    apiKey: # Will be overridden by OPENAI_API_KEY env var
+```json
+// config/default.json
+{
+  "services": {
+    "openai": {
+      "apiKey": ""
+    }
+  }
+}
 ```
 
 ### Setup Examples
@@ -202,10 +208,14 @@ services:
 # Set environment variable
 export OPENAI_API_KEY="sk-your-openai-api-key"
 
-# Or create config/local.yml (ignored by git)
-echo "services:
-  openai:
-    apiKey: sk-your-openai-api-key" > config/local.yml
+# Or create config/local.json (ignored by git)
+echo '{
+  "services": {
+    "openai": {
+      "apiKey": "sk-your-openai-api-key"
+    }
+  }
+}' > config/local.json
 ```
 
 **Production:**
@@ -228,7 +238,7 @@ src/
 │   ├── services/
 │   │   └── logger.service.ts   # Logging interface
 │   ├── storage/
-│   │   └── fs.storage.ts       # File system interface
+│   │   └── binary.storage.ts   # File system interface
 │   ├── use-cases/
 │   │   └── tasks/
 │   │       ├── audio.case.ts       # Audio extraction use case
@@ -251,7 +261,7 @@ src/
 │   │   ├── transcoder.service.impl.ts      # ffmpeg wrapper
 │   │   └── logger.service.impl.ts          # Colored console logger
 │   ├── storage/
-│   │   └── fs.storage.impl.ts              # File system implementation
+│   │   └── binary.storage.impl.ts     # File system implementation
 │   └── tasks/                 # Workflow task implementations
 │       ├── audio.task.impl.ts              # Audio extraction task
 │       ├── transcript.task.impl.ts         # Transcription task
@@ -269,11 +279,12 @@ src/
             └── workflow.dto.ts           # Workflow validation
 
 bin/
-└── cli.ts                     # Global CLI binary entry point
+├── build.sh                   # Build script
+└── cli.sh                     # CLI execution script
 
 dist/
-├── cjs/                       # CommonJS build
-├── esm/                       # ES Module build
+├── cjs/                       # CommonJS build (primary)
+├── esm/                       # ES Module build (optional)
 └── types/                     # TypeScript declarations
 ```
 
@@ -304,17 +315,15 @@ dist/
 
 ### Available Scripts
 
-| Command             | Description                          |
-| ------------------- | ------------------------------------ |
-| `npm run build`     | Build both CommonJS and ESM versions |
-| `npm run build:cjs` | Build CommonJS version only          |
-| `npm run build:esm` | Build ES Module version only         |
-| `npm start`         | Run CLI (requires build first)       |
-| `npm run dev`       | Development mode with ts-node        |
-| `npm test`          | Run Jest tests                       |
-| `npm run lint`      | ESLint on `src/`                     |
-| `npm run lint:fix`  | Auto-fix lint issues                 |
-| `npm run prettier`  | Format code with Prettier            |
+| Command            | Description                          |
+| ------------------ | ------------------------------------ |
+| `npm run build`    | Build both CommonJS and ESM versions |
+| `npm start`        | Run CLI (requires build first)       |
+| `npm run dev`      | Development mode with ts-node        |
+| `npm test`         | Run Jest tests                       |
+| `npm run lint`     | ESLint on `src/`                     |
+| `npm run lint:fix` | Auto-fix lint issues                 |
+| `npm run prettier` | Format code with Prettier            |
 
 ### Development Workflow
 
@@ -407,11 +416,11 @@ Contributions are welcome:
 The package can also be used programmatically as a Node.js library:
 
 ```javascript
-// CommonJS
-const VideoSummary = require('ai-video-summary');
+// CommonJS (recommended)
+const VideoSummary = require('@ljrama/ai-video-summary');
 
-// ES Module
-import VideoSummary from 'ai-video-summary';
+// ES Module (also supported)
+import VideoSummary from '@ljrama/ai-video-summary';
 
 // Initialize with your OpenAI API key
 const videoSummary = new VideoSummary({
@@ -441,7 +450,7 @@ The library exports:
   - `generate(videoPath: string, outputDir?: string)`: Complete workflow function
   - `validateParams(videoPath: string)`: Validate input file
   - `ensureOutputDir(videoPath: string, outputDir: string)`: Ensure output directory exists
-- TypeScript types available via `ai-video-summary/types`
+- TypeScript types available via `@ljrama/ai-video-summary/types`
 
 ## Contributing
 

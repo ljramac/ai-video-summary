@@ -48,6 +48,8 @@ export class RunWorkflow {
       );
 
       this.setWorkflowStatus(allTasksCompleted ? TaskStatus.COMPLETED : TaskStatus.FAILED);
+
+      return this.params;
     } catch (error) {
       this.setWorkflowStatus(TaskStatus.FAILED);
       this.setWorkflowError(error);

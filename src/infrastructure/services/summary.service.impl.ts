@@ -1,4 +1,4 @@
-import openai from 'openai';
+import OpenAI from 'openai';
 import config from 'config';
 import { TranscriptionFile } from '../../domain/entities/transcription.file';
 import { ISummaryService } from '../../domain/services/summary.service';
@@ -8,7 +8,7 @@ export class SummaryService implements ISummaryService {
   private readonly openaiClient: any;
 
   constructor() {
-    this.openaiClient = new openai.OpenAI({ apiKey: this.apiKey });
+    this.openaiClient = new OpenAI({ apiKey: this.apiKey });
   }
 
   async detectLanguage(text: string): Promise<string> {

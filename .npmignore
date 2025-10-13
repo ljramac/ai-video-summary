@@ -1,0 +1,9 @@
+.gitignore
+.DS_Store
+node_modules
+bin
+test
+.vscode
+.husky
+*.tgz
+package

@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { logger } from '../../../infrastructure/services/logger.service.impl';
 import { VideoFile } from '../../../domain/entities/video.file';
 import { AudioFile } from '../../../domain/entities/audio.file';
 import { TranscoderService } from '../../../infrastructure/services/transcoder.service.impl';
@@ -15,7 +16,15 @@ export const audioHandler = async (videoPath: string, outputDir: string) => {
 
   const videoFile = new VideoFile(videoPath);
 
-  await audioCase.run(videoFile, outputDir);
+  const result = await audioCase.run(videoFile, outputDir);
+
+  if (result.videoFile) {
+    logger.info(`- Video File: ${result.videoFile.path}`);
+  }
+
+  if (result.audioFile) {
+    logger.info(`- Audio File: ${result.audioFile.path}`);
+  }
 };
 
 export const transcriptionHandler = async (audioPath: string, outputDir: string) => {
@@ -24,7 +33,11 @@ export const transcriptionHandler = async (audioPath: string, outputDir: string)
 
   const audioFile = new AudioFile(audioPath);
 
-  await transcribe.run(audioFile, outputDir);
+  const result = await transcribe.run(audioFile, outputDir);
+
+  if (result.transcriptionFile) {
+    logger.info(`- Transcription File: ${result.transcriptionFile.path}`);
+  }
 };
 
 export const summaryHandler = async (transcriptionPath: string, outputDir: string) => {
@@ -36,5 +49,9 @@ export const summaryHandler = async (transcriptionPath: string, outputDir: strin
 
   transcriptionFile.addText(transcriptionText);
 
-  await summarize.run(transcriptionFile, outputDir);
+  const result = await summarize.run(transcriptionFile, outputDir);
+
+  if (result.summaryFile) {
+    logger.info(`- Summary File: ${result.summaryFile.path}`);
+  }
 };

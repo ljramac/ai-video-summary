@@ -1,5 +1,5 @@
 import { AudioFile } from '../../domain/entities/audio.file';
-import * as FileCase from '../../application/use-cases/storage/create-file.case';
+import * as FileCases from '../../application/use-cases/storage/create-file.case';
 import { TranscriptionFile } from '../../domain/entities/transcription.file';
 import { ITranscriptorServiceFacade } from '../../application/facades/transcript.service.facade';
 import { TranscriptorService } from '../services/transcriptor.service.impl';
@@ -17,10 +17,7 @@ export class TranscriptorServiceFacade implements ITranscriptorServiceFacade {
 
     const storageService = new FileSystemService();
 
-    await FileCase.createFile(storageService)(
-      transcriptionFile.path,
-      JSON.stringify(result, null, 2),
-    );
+    await FileCases.createFile(storageService)(transcriptionFile.path, result);
 
     transcriptionFile.addText(result);
 

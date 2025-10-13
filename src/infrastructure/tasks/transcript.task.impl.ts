@@ -6,16 +6,16 @@ import { TranscriptorServiceFacade } from '../facades/transcription.service.faca
 export class TranscriptionTask implements ITask {
   public readonly name: string = 'TranscriptionTask';
 
-  async run(data: { audioFile: AudioFile; outputDir: string }): Promise<any> {
+  async run(data: { audioFile: AudioFile }): Promise<any> {
     try {
       const transcriptorServiceFacade = new TranscriptorServiceFacade();
       const transcribe = new Transcribe(transcriptorServiceFacade);
 
-      const result = await transcribe.run(data.audioFile.path);
+      const result = await transcribe.run(data.audioFile);
 
       return { status: 'completed', ...result };
     } catch (error) {
-      return { status: 'failed', data, error };
+      return { status: 'failed', error };
     }
   }
 }

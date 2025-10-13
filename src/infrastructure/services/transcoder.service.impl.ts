@@ -30,12 +30,6 @@ export class TranscoderService implements ITranscoderService {
 
     const secondsPerPart = (maxSizeBytes * 8) / bitRate;
     const numParts = Math.ceil(duration / secondsPerPart);
-    const maxSizeInMB = maxSizeBytes / 1_000_000;
-
-    console.log(`🧩 Total duration: ${duration.toFixed(1)}s`);
-    console.log(`📊 Bitrate: ${(bitRate / 1000).toFixed(1)} kbps`);
-    console.log(`📦 Seconds per part ≈ ${secondsPerPart.toFixed(1)}s (${maxSizeInMB} MB max)`);
-    console.log(`🔪 Estimated parts: ${numParts}`);
 
     const audioFiles: string[] = [];
 
@@ -55,10 +49,6 @@ export class TranscoderService implements ITranscoderService {
         'copy',
         piecePath,
       ];
-
-      console.log(
-        `✂️ Creating part ${i + 1}/${numParts} (${start.toFixed(1)}s → ${end.toFixed(1)}s)`,
-      );
 
       await spawn('ffmpeg', args, { stdio: 'inherit' });
 

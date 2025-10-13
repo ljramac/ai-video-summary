@@ -10,7 +10,7 @@ export class FileSystemService implements IBinaryService {
       await fs.mkdir(pathParse(path).dir, { recursive: true });
     }
 
-    return fs.writeFile(path, data);
+    return fs.writeFile(path, data, { encoding: 'utf-8' });
   }
 
   createDir(path: string): void {

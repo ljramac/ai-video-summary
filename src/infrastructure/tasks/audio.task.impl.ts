@@ -1,6 +1,7 @@
 import { ExtractAudioCase } from '../../application/use-cases/tasks/audio.case';
 import { TranscoderService } from '../services/transcoder.service.impl';
 import { ITask } from '../../application/workflow/task.interface';
+import { VideoFile } from '../../domain/entities/video.file';
 
 export class ExtractAudioTask implements ITask {
   public readonly name: string = 'ExtractAudioTask';
@@ -10,7 +11,9 @@ export class ExtractAudioTask implements ITask {
       const extractAudioService = new TranscoderService();
       const extractAudioCase = new ExtractAudioCase(extractAudioService);
 
-      const result: any = await extractAudioCase.run(data.videoPath, data.outputDir);
+      const videoFile = new VideoFile(data.videoPath);
+
+      const result: any = await extractAudioCase.run(videoFile, data.outputDir);
 
       return {
         status: 'completed',

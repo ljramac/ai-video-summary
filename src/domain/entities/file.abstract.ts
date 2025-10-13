@@ -17,9 +17,25 @@ export abstract class File {
     this.dir = dir;
   }
 
-  getPathWithoutExt(path: string): string {
-    const { dir, name } = pathParse(path);
+  getPathWithoutExt(path?: string): string {
+    const { dir, name } = pathParse(path ?? this.path);
 
     return `${dir}/${name}`;
+  }
+
+  getDirname(): string {
+    return this.dir;
+  }
+
+  getFilename(): string {
+    return this.filename;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  getExt(): string {
+    return this.ext;
   }
 }

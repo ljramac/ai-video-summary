@@ -5,6 +5,7 @@ import { TaskStatus } from '../../../src/application/workflow/types/task.types';
 import { ExtractAudioTask } from '../../../src/infrastructure/tasks/audio.task.impl';
 import { TranscriptionTask } from '../../../src/infrastructure/tasks/transcript.task.impl';
 import { RunWorkflow } from '../../../src/application/use-cases/workflow.case';
+import { SummaryTask } from '../../../src/infrastructure/tasks/summary.task.impl';
 
 describe('RunWorkflow', () => {
   const outputDir = path.join(path.resolve('.'), 'data/test');
@@ -57,7 +58,7 @@ describe('RunWorkflow', () => {
   });
 
   it('should create an instance of RunWorkflow', async () => {
-    const tasks = [new ExtractAudioTask(), new TranscriptionTask()];
+    const tasks = [new ExtractAudioTask(), new TranscriptionTask(), new SummaryTask()];
     const runWorkflow = new RunWorkflow(tasks);
 
     runWorkflow.addParams({
@@ -67,7 +68,12 @@ describe('RunWorkflow', () => {
     });
 
     const result = await runWorkflow.run();
+    const taskNames = tasks.map((t) => t.name);
 
-    expect(result).toBe(TaskStatus.COMPLETED);
-  });
+    const allTasksCompleted = taskNames.every(
+      (name) => result[name]?.status === TaskStatus.COMPLETED,
+    );
+
+    expect(allTasksCompleted).toBe(true);
+  }, 15000);
 });

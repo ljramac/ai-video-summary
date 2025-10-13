@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import config from 'config';
 import OpenAI from 'openai';
-import { logger } from './logger.service.impl';
 import { AudioFile } from '../../domain/entities/audio.file';
 import { ITranscriptorService } from '../../domain/services/transcript.service';
 import { TranscoderService } from './transcoder.service.impl';
@@ -18,8 +17,6 @@ export class TranscriptorService implements ITranscriptorService {
     let fullTranscription = '';
 
     for (const path of audioPaths) {
-      logger.info(`Transcribing audio part: ${path}`);
-
       const partTranscription = await openai.audio.transcriptions
         .create({
           file: fs.createReadStream(path),

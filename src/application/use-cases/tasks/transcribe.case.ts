@@ -9,11 +9,11 @@ export class Transcribe {
     this.transcriptorServiceFacade = transcriptorServiceFacade;
   }
 
-  async run(audioPath: string): Promise<any> {
-    const audioFile = new AudioFile(audioPath);
-    const transcriptionFile = new TranscriptionFile(
-      `${audioFile.getPathWithoutExt(audioPath)}.txt`,
-    );
+  async run(audioFile: AudioFile, outputDir?: string): Promise<any> {
+    const dirname = outputDir ?? audioFile.getDirname();
+    const pathname = `${dirname}/${audioFile.getName()}`;
+
+    const transcriptionFile = new TranscriptionFile(`${pathname}_transcription.txt`);
 
     const result = await this.transcriptorServiceFacade.run(audioFile, transcriptionFile);
 

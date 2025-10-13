@@ -2,12 +2,12 @@ import { ILoggerService } from '../../application/services/logger.service';
 
 export const logger: ILoggerService = {
   info: (message: string) => {
-    console.info(`INFO: ${message}`);
+    console.info(`\x1b[32m[INFO]\x1b[0m ${message}`);
   },
   log: (message: string) => {
-    console.log(`LOG: ${message}`);
+    console.log(`\x1b[36m[LOG]\x1b[0m ${message}`);
   },
   error: (message: string) => {
-    console.error(`ERROR: ${message}`);
+    console.error(`\x1b[31m[ERROR]\x1b[0m ${message}`);
   },
 };

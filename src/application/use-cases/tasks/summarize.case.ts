@@ -17,6 +17,6 @@ export class Summarize {
 
     const result = await this.summaryServiceFacade.run(transcriptionFile, summaryFile);
 
-    return result;
+    return { ...result, summaryFile };
   }
 }

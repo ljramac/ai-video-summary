@@ -1,3 +1,4 @@
+import { logger } from '../../../infrastructure/services/logger.service.impl';
 import { ExtractAudioTask } from '../../../infrastructure/tasks/audio.task.impl';
 import { TranscriptionTask } from '../../../infrastructure/tasks/transcript.task.impl';
 import { RunWorkflow } from '../../../application/use-cases/workflow.case';
@@ -17,5 +18,19 @@ export const workflowHandler = async (videoPath: string, outputDir: string) => {
 
   const result = await runWorkflow.run();
 
-  console.log('Workflow result:', result);
+  if (result.videoFile) {
+    logger.info(`- Video File: ${result.videoFile.path}`);
+  }
+
+  if (result.audioFile) {
+    logger.info(`- Audio File: ${result.audioFile.path}`);
+  }
+
+  if (result.transcriptionFile) {
+    logger.info(`- Transcription File: ${result.transcriptionFile.path}`);
+  }
+
+  if (result.summaryFile) {
+    logger.info(`- Summary File: ${result.summaryFile.path}`);
+  }
 };

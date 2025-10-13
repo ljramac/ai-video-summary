@@ -21,6 +21,6 @@ export class SummaryServiceFacade implements ISummaryServiceFacade {
 
     summaryFile.addText(result);
 
-    return { summaryText: result };
+    return { summaryFile, summaryText: result };
   }
 }

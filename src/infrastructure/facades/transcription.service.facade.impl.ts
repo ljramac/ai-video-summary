@@ -21,6 +21,6 @@ export class TranscriptorServiceFacade implements ITranscriptorServiceFacade {
 
     transcriptionFile.addText(result);
 
-    return { transcriptionText: result };
+    return { transcriptionFile, transcriptionText: result };
   }
 }

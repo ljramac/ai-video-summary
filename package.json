@@ -1,16 +1,10 @@
 {
-  "name": "ai-video-summary",
+  "name": "@ljrama/ai-video-summary",
   "version": "1.0.0",
   "description": "",
   "homepage": "https://github.com/ljramac/ai-video-summary#readme",
   "bin": {
-    "transcribe": "./dist/bin/workflow.js",
-    "workflow": "./dist/bin/workflow.js",
-    "extract": "./dist/bin/audio.js",
-    "audio": "./dist/bin/audio.js",
-    "transcript": "./dist/bin/transcript.js",
-    "summary": "./dist/bin/summary.js",
-    "summarize": "./dist/bin/summary.js"
+    "ai-summary": "./dist/cjs/interfaces/cli/index.js"
   },
   "bugs": {
     "url": "https://github.com/ljramac/ai-video-summary/issues"
@@ -22,7 +16,7 @@
   "license": "ISC",
   "author": "Lino Rama <ljramac@gmail.com>",
   "type": "commonjs",
-  "main": "dist/src/index.js",
+  "main": "src/index",
   "directories": {
     "test": "test"
   },
@@ -31,22 +25,23 @@
     "lint": "npx eslint src",
     "lint:fix": "npx eslint src --fix",
     "prettier": "npx prettier --write",
-    "build": "tsc",
-    "start": "node dist/src/index.js",
-    "dev": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' src/index.ts",
-    "prepare": "npx husky && npx tsc"
+    "build": "./bin/build.sh",
+    "start": "./bin/cli.sh",
+    "dev": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/interfaces/cli/index.ts",
+    "prepare": "npx husky && npm run build"
   },
   "dependencies": {
     "axios": "1.12.2",
     "child-process-promise": "2.2.1",
     "commander": "14.0.1",
     "config": "4.1.1",
+    "inquirer": "12.10.0",
     "openai": "6.3.0"
   },
   "devDependencies": {
-    "@types/child-process-promise": "^2.2.6",
+    "@types/child-process-promise": "2.2.6",
     "@types/config": "3.3.5",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "30.0.0",
     "@types/node": "24.6.2",
     "@typescript-eslint/eslint-plugin": "8.45.0",
     "@typescript-eslint/parser": "8.45.0",
@@ -57,9 +52,11 @@
     "jest": "30.2.0",
     "lint-staged": "16.2.3",
     "prettier": "3.6.2",
-    "ts-jest": "^29.4.4",
+    "ts-jest": "29.4.4",
     "ts-node": "10.9.2",
-    "typescript": "^5.9.3",
+    "tsc-alias": "1.8.16",
+    "tslib": "2.8.1",
+    "typescript": "5.9.3",
     "typescript-eslint": "8.45.0"
   },
   "engines": {
@@ -78,5 +75,15 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

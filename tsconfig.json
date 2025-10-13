@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "./dist/cjs",
     "strict": true,
     "esModuleInterop": true
   },
   "typeRoots": ["./src/types", "./node_modules/@types"],
-  "include": ["src", "test", "bin"]
+  "include": ["src"]
 }

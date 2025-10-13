@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import { spawn, exec } from 'child-process-promise';
+import { execSync } from 'child_process';
+import path from 'path';
 import { VideoFile } from '../../domain/entities/video.file';
 import { AudioFile } from '../../domain/entities/audio.file';
 import { ITranscoderService } from '../../domain/services/transcoder.service';
